@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-export function LoginView(props) {
+export function RegistrationView(props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -8,7 +9,7 @@ export function LoginView(props) {
 
   const handleSubmit = () => {
     e.preventDefault();
-    axios.post('', {
+    axios.post('https://myflixdb-5303.herokuapp.com/users', {
       Username: username,
       Password: password,
       Email: email,
@@ -22,8 +23,6 @@ export function LoginView(props) {
       .catch(e => {
         console.log('error registering the user')
       });
-    console.log(username, password, email, birthday);
-    props.onLoggedIn(username);
   };
 
   return (
@@ -38,11 +37,11 @@ export function LoginView(props) {
       </label>
       <label>
         Email:
-        <input type="text" value={email} onChange={e => setEmail(e.target.value)} />
+        <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
       </label>
       <label>
         Date of birth:
-        <input type="text" value={birthday} onChange={e => setBirthday(e.target.value)} />
+        <input type="date" value={birthday} onChange={e => setBirthday(e.target.value)} />
       </label>
       <button type="submit" onClick={handleSubmit}>Submit</button>
     </form>

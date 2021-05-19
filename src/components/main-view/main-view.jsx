@@ -7,6 +7,9 @@ import { LoginView } from '../login-view/login-view';
 import { RegistrationView } from '../register-view/register-view';
 import { MovieCard } from '../movie-card/movie-card';
 import { MovieView } from '../movie-view/movie-view';
+import { DirectorView } from '../director-view/director-view';
+import { GenreView } from '../genre-view/genre-view';
+import { ProfileView } from '../profile-view/profile-view';
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -119,13 +122,22 @@ export default class MainView extends React.Component {
 
           if (movies.length === 0) return <div className="main-view" />;
 
-          if (movies.length === 0) return <div className="main-view" />;
           return <Col md={8}>
             <DirectorView director={movies.find(m => m.Director.Name === match.params.name).Director} onBackClick={() => history.goBack()} />
           </Col>
         }
         } />
-        <Route exact path="/register" render={() => {
+        <Route exact path="/users/:Username" render={({ match, history }) => {
+          if (!user) return <Col>
+            <LoginView onLoggedIn={user => this.onLoggedIn(user)} />;
+          </Col>
+
+          return <Col md={8}>
+            <ProfileView profile={user} onBackClick={() => history.goBack()} />
+          </Col>
+        }
+        } />
+        <Route path="/register" render={() => {
           if (user) return <Redirect to="/" />;
           return <Col>
             <RegistrationView />
