@@ -8,6 +8,20 @@ export function LoginView(props) {
 
   const handleSubmit = () => {
     e.preventDefault();
+    axios.post('', {
+      Username: username,
+      Password: password,
+      Email: email,
+      Birthday: birthday
+    })
+      .then(response => {
+        const data = response.data;
+        console.log(data);
+        window.open('/', '_self');
+      })
+      .catch(e => {
+        console.log('error registering the user')
+      });
     console.log(username, password, email, birthday);
     props.onLoggedIn(username);
   };
