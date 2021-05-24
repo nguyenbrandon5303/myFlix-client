@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 
 import { LoginView } from '../login-view/login-view';
 import { RegistrationView } from '../register-view/register-view';
@@ -138,7 +138,7 @@ export default class MainView extends React.Component {
         }
         } />
         <Route path="/register" render={() => {
-          if (user) return <Redirect to="/" />;
+          if (user) return <Redirect to="/" />
           return <Col>
             <RegistrationView />
           </Col>

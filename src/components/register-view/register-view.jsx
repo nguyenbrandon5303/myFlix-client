@@ -7,7 +7,7 @@ export function RegistrationView(props) {
   const [email, setEmail] = useState('');
   const [birthday, setBirthday] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     axios.post('https://myflixdb-5303.herokuapp.com/users', {
       Username: username,
