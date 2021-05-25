@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
@@ -13,6 +13,13 @@ export function ProfileView(props) {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [birthday, setBirthday] = useState('');
+  const [favoriteMovieIds, setFavoriteMoviesIds] = useState('');
+  const [favoriteMoviesList, setFavoriteMoviesList] = useState('');
+
+  useEffect(async () => {
+    await setMovieList();
+    await getMovies();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,6 +41,7 @@ export function ProfileView(props) {
         console.log(e);
       });
   };
+
   const handleDeregister = (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -53,45 +61,45 @@ export function ProfileView(props) {
       });
   }
 
-  favoriteMoviesId = [];
-  favoriteMoviesList = [];
-
   const token = localStorage.getItem('token');
   const storedUsername = localStorage.getItem('user');
 
-  const setMovieList = (e) => {
+  const setMovieList = () => {
     axios.get(`https://myflixdb-5303.herokuapp.com/users/${storedUsername}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(response => {
-        favoriteMoviesId = response.data.Favorite;
-        console.log(favoriteMoviesId);
+        setFavoriteMoviesIds(response.data.Favorite);
+        console.log('favoriteMovieIds: ' + favoriteMovieIds);
       })
       .catch(e => {
-        console.log('error getting favorite movies')
+        console.log('error getting favorite movie id')
         console.log(e);
       })
   }
 
-  const getMovies = (e) => {
+  const getMovies = () => {
     axios.get('https://myflixdb-5303.herokuapp.com/movies', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(response => {
-        movies: response.data
+        const favMovies = response.data.filter((movie) => favoriteMovieIds.includes(movie._id));
+        setFavoriteMoviesList(favMovies);
+        console.log(favoriteMoviesList);
       })
       .catch(function (error) {
         console.log(error);
       })
   }
 
-  setMovieList();
-  console.log(favoriteMoviesId);
-
-  // movieDB = getMovies();
-  // favoriteMoviesId.forEach(movieid => favoriteMoviesList.push(movieDB.find(m => m._id === match.params.movieId)));
-  // console.log(favoriteMoviesId);
-  // console.log(favoriteMoviesList);
+  const removeFavorite = (movieId) => {
+    console.log(movieId);
+    // Returns index of the movie based on movie._id
+    pos = favoriteMoviesList.findIndex((element) => element._id === movieId);
+    console.log(pos);
+    // Remove the movie at position pos
+    // favoriteMoviesList.splice(pos, 1);
+  }
 
   return (
     <div>
@@ -118,16 +126,19 @@ export function ProfileView(props) {
       <Row >
         {favoriteMoviesList.map((movie) => {
           return (
-            <Card>
-              <Card.Img variant="top" src={movie.ImagePath} />
-              <Card.Body>
-                <Card.Title>{movie.Title}</Card.Title>
-                <Card.Text>{movie.Description}</Card.Text>
-                <Link to={`/movies/${movie._id}`}>
-                  <Button variant="link">Open</Button>
-                </Link>
-              </Card.Body>
-            </Card>
+            <Col md={6} key={movie._id}>
+              <Card>
+                <Card.Img variant="top" src={movie.ImagePath} />
+                <Card.Body>
+                  <Card.Title>{movie.Title}</Card.Title>
+                  <Card.Text>{movie.Description}</Card.Text>
+                  <Link to={`/movies/${movie._id}`}>
+                    <Button variant="link">Open</Button>
+                  </Link>
+                  <Button onClick={removeFavorite(movie._id)}>Remove</Button>
+                </Card.Body>
+              </Card>
+            </Col>
           );
         })
         }

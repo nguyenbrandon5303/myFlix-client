@@ -35137,7 +35137,8 @@ try {
   var _reactRouterDom = require("react-router-dom");
   var _reactBootstrapRow = require('react-bootstrap/Row');
   var _reactBootstrapRowDefault = _parcelHelpers.interopDefault(_reactBootstrapRow);
-  require('react-bootstrap/Col');
+  var _reactBootstrapCol = require('react-bootstrap/Col');
+  var _reactBootstrapColDefault = _parcelHelpers.interopDefault(_reactBootstrapCol);
   var _jsxFileName = "C:\\Users\\whattywhat\\Documents\\Web Development Course\\Full-Stack Immersion\\Achievement 3\\myFlix-client\\src\\components\\profile-view\\profile-view.jsx", _s = $RefreshSig$();
   function ProfileView(props) {
     _s();
@@ -35145,6 +35146,12 @@ try {
     const [password, setPassword] = _react.useState('');
     const [email, setEmail] = _react.useState('');
     const [birthday, setBirthday] = _react.useState('');
+    const [favoriteMovieIds, setFavoriteMoviesIds] = _react.useState('');
+    const [favoriteMoviesList, setFavoriteMoviesList] = _react.useState('');
+    _react.useEffect(async () => {
+      await setMovieList();
+      await getMovies();
+    }, []);
     const handleSubmit = e => {
       e.preventDefault();
       const token = localStorage.getItem('token');
@@ -35183,60 +35190,60 @@ try {
         console.log(e);
       });
     };
-    favoriteMoviesId = [];
-    favoriteMoviesList = [];
     const token = localStorage.getItem('token');
     const storedUsername = localStorage.getItem('user');
-    const setMovieList = e => {
+    const setMovieList = () => {
       _axiosDefault.default.get(`https://myflixdb-5303.herokuapp.com/users/${storedUsername}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       }).then(response => {
-        favoriteMoviesId = response.data.Favorite;
-        console.log(favoriteMoviesId);
+        setFavoriteMoviesIds(response.data.Favorite);
+        console.log('favoriteMovieIds: ' + favoriteMovieIds);
       }).catch(e => {
-        console.log('error getting favorite movies');
+        console.log('error getting favorite movie id');
         console.log(e);
       });
     };
-    const getMovies = e => {
+    const getMovies = () => {
       _axiosDefault.default.get('https://myflixdb-5303.herokuapp.com/movies', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       }).then(response => {
-        movies: response.data;
+        const favMovies = response.data.filter(movie => favoriteMovieIds.includes(movie._id));
+        setFavoriteMoviesList(favMovies);
+        console.log(favoriteMoviesList);
       }).catch(function (error) {
         console.log(error);
       });
     };
-    setMovieList();
-    console.log(favoriteMoviesId);
-    // movieDB = getMovies();
-    // favoriteMoviesId.forEach(movieid => favoriteMoviesList.push(movieDB.find(m => m._id === match.params.movieId)));
-    // console.log(favoriteMoviesId);
-    // console.log(favoriteMoviesList);
+    const removeFavorite = movieId => {
+      console.log(movieId);
+      // Returns index of the movie based on movie._id
+      pos = favoriteMoviesList.findIndex(element => element._id === movieId);
+      console.log(pos);
+    };
     return (
       /*#__PURE__*/_reactDefault.default.createElement("div", {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 97,
+          lineNumber: 105,
           columnNumber: 5
         }
       }, /*#__PURE__*/_reactDefault.default.createElement("form", {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 98,
+          lineNumber: 106,
           columnNumber: 7
         }
       }, /*#__PURE__*/_reactDefault.default.createElement("label", {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 99,
+          lineNumber: 107,
           columnNumber: 9
         }
       }, "Username:", /*#__PURE__*/_reactDefault.default.createElement("input", {
@@ -35245,44 +35252,6 @@ try {
         placeholder: "Username",
         required: true,
         onChange: e => setUsername(e.target.value),
-        __self: this,
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 101,
-          columnNumber: 9
-        }
-      })), /*#__PURE__*/_reactDefault.default.createElement("label", {
-        __self: this,
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 103,
-          columnNumber: 9
-        }
-      }, "Password:", /*#__PURE__*/_reactDefault.default.createElement("input", {
-        type: "text",
-        value: password,
-        placeholder: "Password",
-        required: true,
-        onChange: e => setPassword(e.target.value),
-        __self: this,
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 105,
-          columnNumber: 9
-        }
-      })), /*#__PURE__*/_reactDefault.default.createElement("label", {
-        __self: this,
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 107,
-          columnNumber: 9
-        }
-      }, "Email:", /*#__PURE__*/_reactDefault.default.createElement("input", {
-        type: "email",
-        value: email,
-        placeholder: "Email",
-        required: true,
-        onChange: e => setEmail(e.target.value),
         __self: this,
         __source: {
           fileName: _jsxFileName,
@@ -35296,6 +35265,44 @@ try {
           lineNumber: 111,
           columnNumber: 9
         }
+      }, "Password:", /*#__PURE__*/_reactDefault.default.createElement("input", {
+        type: "text",
+        value: password,
+        placeholder: "Password",
+        required: true,
+        onChange: e => setPassword(e.target.value),
+        __self: this,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 113,
+          columnNumber: 9
+        }
+      })), /*#__PURE__*/_reactDefault.default.createElement("label", {
+        __self: this,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 115,
+          columnNumber: 9
+        }
+      }, "Email:", /*#__PURE__*/_reactDefault.default.createElement("input", {
+        type: "email",
+        value: email,
+        placeholder: "Email",
+        required: true,
+        onChange: e => setEmail(e.target.value),
+        __self: this,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 117,
+          columnNumber: 9
+        }
+      })), /*#__PURE__*/_reactDefault.default.createElement("label", {
+        __self: this,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 119,
+          columnNumber: 9
+        }
       }, "Date of birth:", /*#__PURE__*/_reactDefault.default.createElement("input", {
         type: "date",
         value: birthday,
@@ -35305,7 +35312,7 @@ try {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 113,
+          lineNumber: 121,
           columnNumber: 9
         }
       })), /*#__PURE__*/_reactDefault.default.createElement("button", {
@@ -35314,7 +35321,7 @@ try {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 115,
+          lineNumber: 123,
           columnNumber: 9
         }
       }, "Update"), /*#__PURE__*/_reactDefault.default.createElement("button", {
@@ -35323,24 +35330,33 @@ try {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 116,
+          lineNumber: 124,
           columnNumber: 9
         }
       }, "Deregister")), /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapRowDefault.default, {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 118,
+          lineNumber: 126,
           columnNumber: 7
         }
       }, favoriteMoviesList.map(movie => {
         return (
-          /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default, {
+          /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapColDefault.default, {
+            md: 6,
+            key: movie._id,
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 121,
+              lineNumber: 129,
               columnNumber: 13
+            }
+          }, /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default, {
+            __self: this,
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 130,
+              columnNumber: 15
             }
           }, /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default.Img, {
             variant: "top",
@@ -35348,52 +35364,60 @@ try {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 122,
-              columnNumber: 15
+              lineNumber: 131,
+              columnNumber: 17
             }
           }), /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default.Body, {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 123,
-              columnNumber: 15
+              lineNumber: 132,
+              columnNumber: 17
             }
           }, /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default.Title, {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 124,
-              columnNumber: 17
+              lineNumber: 133,
+              columnNumber: 19
             }
           }, movie.Title), /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default.Text, {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 125,
-              columnNumber: 17
+              lineNumber: 134,
+              columnNumber: 19
             }
           }, movie.Description), /*#__PURE__*/_reactDefault.default.createElement(_reactRouterDom.Link, {
             to: `/movies/${movie._id}`,
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 126,
-              columnNumber: 17
+              lineNumber: 135,
+              columnNumber: 19
             }
           }, /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapButtonDefault.default, {
             variant: "link",
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 127,
+              lineNumber: 136,
+              columnNumber: 21
+            }
+          }, "Open")), /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapButtonDefault.default, {
+            onClick: removeFavorite(movie._id),
+            __self: this,
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 138,
               columnNumber: 19
             }
-          }, "Open"))))
+          }, "Remove"))))
         );
       })))
     );
   }
-  _s(ProfileView, "tdA1KK8yaZidqYo0wscqshHt/KE=");
+  _s(ProfileView, "9D4LB/xYsBk7ZjQu0BLlGqgqCPs=");
   _c = ProfileView;
   var _c;
   $RefreshReg$(_c, "ProfileView");
