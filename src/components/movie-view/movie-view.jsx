@@ -1,9 +1,28 @@
 import React from 'react';
+import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 
 import { Link } from "react-router-dom";
 
 export class MovieView extends React.Component {
+
+  addToFavorite(movieId) {
+    const token = localStorage.getItem('token');
+    const storedUsername = localStorage.getItem('user');
+    console.log(token);
+
+    axios.post(`https://myflixdb-5303.herokuapp.com/users/${storedUsername}/movies/${movieId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(response => {
+        console.log(response.data.Favorite);
+      })
+      .catch(function (error) {
+        console.log('error adding to favorite');
+        console.log(error);
+      })
+
+  }
 
   render() {
     const { movie, onBackClick } = this.props;
@@ -27,6 +46,7 @@ export class MovieView extends React.Component {
         <Link to={`/genres/${movie.Genre.Name}`}>
           <Button variant="link">Genre</Button>
         </Link>
+        <button onClick={() => { this.addToFavorite(movie._id); }}>Add to Favorites</button>
         <button onClick={() => { onBackClick(null); }}>Back</button>
       </div>
     );
