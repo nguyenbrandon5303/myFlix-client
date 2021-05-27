@@ -13,12 +13,11 @@ export function ProfileView(props) {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [birthday, setBirthday] = useState('');
-  const [favoriteMovieIds, setFavoriteMoviesIds] = useState('');
-  const [favoriteMoviesList, setFavoriteMoviesList] = useState('');
+  const [favoriteMovieIds, setFavoriteMoviesIds] = useState([]);
+  const [favoriteMoviesList, setFavoriteMoviesList] = useState([]);
 
   useEffect(async () => {
-    await setMovieList();
-    await getMovies();
+    setMovieList();
   }, []);
 
   const handleSubmit = (e) => {
@@ -70,7 +69,8 @@ export function ProfileView(props) {
     })
       .then(response => {
         setFavoriteMoviesIds(response.data.Favorite);
-        console.log('favoriteMovieIds: ' + favoriteMovieIds);
+        getMovies(response.data.Favorite);
+        // console.log('favoriteMovieIds: ' + favoriteMovieIds);
       })
       .catch(e => {
         console.log('error getting favorite movie id')
@@ -78,14 +78,15 @@ export function ProfileView(props) {
       })
   }
 
-  const getMovies = () => {
+  const getMovies = (favoriteMovieIdsArr) => {
     axios.get('https://myflixdb-5303.herokuapp.com/movies', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(response => {
-        const favMovies = response.data.filter((movie) => favoriteMovieIds.includes(movie._id));
+        // console.log(favoriteMovieIdsArr);
+        const favMovies = response.data.filter((movie) => favoriteMovieIdsArr.includes(movie._id));
         setFavoriteMoviesList(favMovies);
-        console.log(favoriteMoviesList);
+        // console.log(favoriteMoviesList);
       })
       .catch(function (error) {
         console.log(error);
@@ -93,12 +94,16 @@ export function ProfileView(props) {
   }
 
   const removeFavorite = (movieId) => {
-    console.log(movieId);
-    // Returns index of the movie based on movie._id
-    pos = favoriteMoviesList.findIndex((element) => element._id === movieId);
-    console.log(pos);
-    // Remove the movie at position pos
-    // favoriteMoviesList.splice(pos, 1);
+    axios.delete(`https://myflixdb-5303.herokuapp.com/users/${storedUsername}/movies/${movieId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(response => {
+        setMovieList();
+        // console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
   }
 
   return (
@@ -135,7 +140,7 @@ export function ProfileView(props) {
                   <Link to={`/movies/${movie._id}`}>
                     <Button variant="link">Open</Button>
                   </Link>
-                  <Button onClick={removeFavorite(movie._id)}>Remove</Button>
+                  <Button onClick={() => removeFavorite(movie._id)}>Remove</Button>
                 </Card.Body>
               </Card>
             </Col>

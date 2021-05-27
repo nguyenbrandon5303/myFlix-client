@@ -31588,7 +31588,7 @@ try {
       const token = localStorage.getItem('token');
       const storedUsername = localStorage.getItem('user');
       console.log(token);
-      _axiosDefault.default.post(`https://myflixdb-5303.herokuapp.com/users/${storedUsername}/movies/${movieId}`, {
+      _axiosDefault.default.post(`https://myflixdb-5303.herokuapp.com/users/${storedUsername}/movies/${movieId}`, {}, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -35173,11 +35173,10 @@ try {
     const [password, setPassword] = _react.useState('');
     const [email, setEmail] = _react.useState('');
     const [birthday, setBirthday] = _react.useState('');
-    const [favoriteMovieIds, setFavoriteMoviesIds] = _react.useState('');
-    const [favoriteMoviesList, setFavoriteMoviesList] = _react.useState('');
+    const [favoriteMovieIds, setFavoriteMoviesIds] = _react.useState([]);
+    const [favoriteMoviesList, setFavoriteMoviesList] = _react.useState([]);
     _react.useEffect(async () => {
-      await setMovieList();
-      await getMovies();
+      setMovieList();
     }, []);
     const handleSubmit = e => {
       e.preventDefault();
@@ -35226,51 +35225,56 @@ try {
         }
       }).then(response => {
         setFavoriteMoviesIds(response.data.Favorite);
-        console.log('favoriteMovieIds: ' + favoriteMovieIds);
+        getMovies(response.data.Favorite);
       }).catch(e => {
         console.log('error getting favorite movie id');
         console.log(e);
       });
     };
-    const getMovies = () => {
+    const getMovies = favoriteMovieIdsArr => {
       _axiosDefault.default.get('https://myflixdb-5303.herokuapp.com/movies', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       }).then(response => {
-        const favMovies = response.data.filter(movie => favoriteMovieIds.includes(movie._id));
+        // console.log(favoriteMovieIdsArr);
+        const favMovies = response.data.filter(movie => favoriteMovieIdsArr.includes(movie._id));
         setFavoriteMoviesList(favMovies);
-        console.log(favoriteMoviesList);
       }).catch(function (error) {
         console.log(error);
       });
     };
     const removeFavorite = movieId => {
-      console.log(movieId);
-      // Returns index of the movie based on movie._id
-      pos = favoriteMoviesList.findIndex(element => element._id === movieId);
-      console.log(pos);
+      _axiosDefault.default.delete(`https://myflixdb-5303.herokuapp.com/users/${storedUsername}/movies/${movieId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).then(response => {
+        setMovieList();
+      }).catch(function (error) {
+        console.log(error);
+      });
     };
     return (
       /*#__PURE__*/_reactDefault.default.createElement("div", {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 105,
+          lineNumber: 110,
           columnNumber: 5
         }
       }, /*#__PURE__*/_reactDefault.default.createElement("form", {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 106,
+          lineNumber: 111,
           columnNumber: 7
         }
       }, /*#__PURE__*/_reactDefault.default.createElement("label", {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 107,
+          lineNumber: 112,
           columnNumber: 9
         }
       }, "Username:", /*#__PURE__*/_reactDefault.default.createElement("input", {
@@ -35282,14 +35286,14 @@ try {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 109,
+          lineNumber: 114,
           columnNumber: 9
         }
       })), /*#__PURE__*/_reactDefault.default.createElement("label", {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 111,
+          lineNumber: 116,
           columnNumber: 9
         }
       }, "Password:", /*#__PURE__*/_reactDefault.default.createElement("input", {
@@ -35301,14 +35305,14 @@ try {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 113,
+          lineNumber: 118,
           columnNumber: 9
         }
       })), /*#__PURE__*/_reactDefault.default.createElement("label", {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 115,
+          lineNumber: 120,
           columnNumber: 9
         }
       }, "Email:", /*#__PURE__*/_reactDefault.default.createElement("input", {
@@ -35320,14 +35324,14 @@ try {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 117,
+          lineNumber: 122,
           columnNumber: 9
         }
       })), /*#__PURE__*/_reactDefault.default.createElement("label", {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 119,
+          lineNumber: 124,
           columnNumber: 9
         }
       }, "Date of birth:", /*#__PURE__*/_reactDefault.default.createElement("input", {
@@ -35339,7 +35343,7 @@ try {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 121,
+          lineNumber: 126,
           columnNumber: 9
         }
       })), /*#__PURE__*/_reactDefault.default.createElement("button", {
@@ -35348,7 +35352,7 @@ try {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 123,
+          lineNumber: 128,
           columnNumber: 9
         }
       }, "Update"), /*#__PURE__*/_reactDefault.default.createElement("button", {
@@ -35357,14 +35361,14 @@ try {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 124,
+          lineNumber: 129,
           columnNumber: 9
         }
       }, "Deregister")), /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapRowDefault.default, {
         __self: this,
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 126,
+          lineNumber: 131,
           columnNumber: 7
         }
       }, favoriteMoviesList.map(movie => {
@@ -35375,14 +35379,14 @@ try {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 129,
+              lineNumber: 134,
               columnNumber: 13
             }
           }, /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default, {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 130,
+              lineNumber: 135,
               columnNumber: 15
             }
           }, /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default.Img, {
@@ -35391,28 +35395,28 @@ try {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 131,
+              lineNumber: 136,
               columnNumber: 17
             }
           }), /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default.Body, {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 132,
+              lineNumber: 137,
               columnNumber: 17
             }
           }, /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default.Title, {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 133,
+              lineNumber: 138,
               columnNumber: 19
             }
           }, movie.Title), /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapCardDefault.default.Text, {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 134,
+              lineNumber: 139,
               columnNumber: 19
             }
           }, movie.Description), /*#__PURE__*/_reactDefault.default.createElement(_reactRouterDom.Link, {
@@ -35420,7 +35424,7 @@ try {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 135,
+              lineNumber: 140,
               columnNumber: 19
             }
           }, /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapButtonDefault.default, {
@@ -35428,15 +35432,15 @@ try {
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 136,
+              lineNumber: 141,
               columnNumber: 21
             }
           }, "Open")), /*#__PURE__*/_reactDefault.default.createElement(_reactBootstrapButtonDefault.default, {
-            onClick: removeFavorite(movie._id),
+            onClick: () => removeFavorite(movie._id),
             __self: this,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 138,
+              lineNumber: 143,
               columnNumber: 19
             }
           }, "Remove"))))
@@ -35444,7 +35448,7 @@ try {
       })))
     );
   }
-  _s(ProfileView, "9D4LB/xYsBk7ZjQu0BLlGqgqCPs=");
+  _s(ProfileView, "Jak7evKcesecsAVfF7o+iE83olo=");
   _c = ProfileView;
   var _c;
   $RefreshReg$(_c, "ProfileView");
