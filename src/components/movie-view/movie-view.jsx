@@ -9,13 +9,12 @@ export class MovieView extends React.Component {
   addToFavorite(movieId) {
     const token = localStorage.getItem('token');
     const storedUsername = localStorage.getItem('user');
-    console.log(token);
 
     axios.post(`https://myflixdb-5303.herokuapp.com/users/${storedUsername}/movies/${movieId}`, {}, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(response => {
-        console.log(response.data.Favorite);
+        alert('Movie has been added to favorites.');
       })
       .catch(function (error) {
         console.log('error adding to favorite');
